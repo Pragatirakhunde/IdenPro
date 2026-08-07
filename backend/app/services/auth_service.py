@@ -9,7 +9,6 @@ from app.auth.security import (
     create_access_token
 )
 
-
 class AuthService:
     """
     Handles all authentication-related business logic.

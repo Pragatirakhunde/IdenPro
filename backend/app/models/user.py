@@ -2,6 +2,7 @@ import uuid
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 
 from app.database.base import Base
 
@@ -35,4 +36,10 @@ class User(Base):
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
+    )
+
+    projects = relationship(
+        "Project",
+        back_populates="owner",
+        cascade="all, delete-orphan"
     )
