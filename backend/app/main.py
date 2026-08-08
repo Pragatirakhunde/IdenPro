@@ -10,6 +10,8 @@ from app.api.knowledge_graph import router as knowledge_graph
 
 from app.database.base import Base
 from app.database.connection import engine
+from app.api.graph_rag import router as graph_rag
+from app.api.chat import router as chat
 
 
 # -----------------------------
@@ -78,6 +80,8 @@ app.include_router(auth_router)
 app.include_router(project_router)
 app.include_router(datasource_router)
 app.include_router(knowledge_graph)
+app.include_router(graph_rag)
+app.include_router(chat)
 
 # -----------------------------
 # Root Endpoint

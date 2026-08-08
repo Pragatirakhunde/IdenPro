@@ -39,9 +39,9 @@ class DatabaseConnection(Base):
 
     __tablename__ = "database_connections"
 
-    # ------------------------------------------------------
+    # ======================================================
     # Primary Key
-    # ------------------------------------------------------
+    # ======================================================
 
     id = Column(
         UUID(as_uuid=True),
@@ -49,9 +49,9 @@ class DatabaseConnection(Base):
         default=uuid.uuid4,
     )
 
-    # ------------------------------------------------------
+    # ======================================================
     # Linked Data Source
-    # ------------------------------------------------------
+    # ======================================================
 
     datasource_id = Column(
         UUID(as_uuid=True),
@@ -63,18 +63,18 @@ class DatabaseConnection(Base):
         nullable=False,
     )
 
-    # ------------------------------------------------------
+    # ======================================================
     # Database Type
-    # ------------------------------------------------------
+    # ======================================================
 
     db_type = Column(
         SqlEnum(DatabaseType),
         nullable=False,
     )
 
-    # ------------------------------------------------------
+    # ======================================================
     # Connection Details
-    # ------------------------------------------------------
+    # ======================================================
 
     connection_name = Column(
         String(100),
@@ -101,28 +101,38 @@ class DatabaseConnection(Base):
         nullable=False,
     )
 
-    # Store encrypted password only
+    # ======================================================
+    # Password
+    # ======================================================
+
+    # Only encrypted password is stored.
     encrypted_password = Column(
         Text,
         nullable=False,
     )
 
-    # Optional full URI (without password)
+    # ======================================================
+    # Connection URI
+    # ======================================================
+
     connection_uri = Column(
         Text,
         nullable=True,
     )
 
-    # SSL Support
+    # ======================================================
+    # SSL
+    # ======================================================
+
     ssl_enabled = Column(
         Boolean,
         default=False,
         nullable=False,
     )
 
-    # ------------------------------------------------------
+    # ======================================================
     # Status
-    # ------------------------------------------------------
+    # ======================================================
 
     is_active = Column(
         Boolean,
@@ -135,9 +145,9 @@ class DatabaseConnection(Base):
         nullable=True,
     )
 
-    # ------------------------------------------------------
+    # ======================================================
     # Audit
-    # ------------------------------------------------------
+    # ======================================================
 
     created_at = Column(
         DateTime(timezone=True),
@@ -149,6 +159,10 @@ class DatabaseConnection(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+
+    # ======================================================
+    # Schema / Timeout
+    # ======================================================
 
     schema_name = Column(
         String(100),
@@ -169,11 +183,4 @@ class DatabaseConnection(Base):
     datasource = relationship(
         "DataSource",
         back_populates="db_connection",
-    )
-
-    db_connection = relationship(
-        "DatabaseConnection",
-        back_populates="datasource",
-        uselist=False,
-        cascade="all, delete-orphan",
     )
