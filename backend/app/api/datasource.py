@@ -13,9 +13,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
-
 from app.auth.dependencies import get_current_user
-
 from app.models.user import User
 
 from app.schemas.datasource import (
@@ -31,6 +29,11 @@ from app.schemas.db_connection import (
 from app.services.datasource_service import (
     DataSourceService,
 )
+
+from app.services.profiling_service import (
+    ProfilingService,
+)
+
 
 router = APIRouter(
     prefix="/api/datasources",
@@ -72,6 +75,20 @@ async def upload_file(
             )
         )
 
+        # --------------------------------------------------
+        # Run dataset profiling immediately
+        # --------------------------------------------------
+
+        profiling_service = ProfilingService()
+
+        profiling_result = profiling_service.safe_run(
+            datasource
+        )
+
+        # --------------------------------------------------
+        # Return datasource + profiling information
+        # --------------------------------------------------
+
         return datasource
 
     except ValueError as e:
@@ -79,6 +96,13 @@ async def upload_file(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"File upload failed: {str(e)}",
         )
 
 

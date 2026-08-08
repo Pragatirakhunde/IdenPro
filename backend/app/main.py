@@ -7,11 +7,13 @@ from app.api.auth import router as auth_router
 from app.api.project import router as project_router
 from app.api.datasource import router as datasource_router
 from app.api.knowledge_graph import router as knowledge_graph
+from app.api.profiling import router as profiling_router
 
 from app.database.base import Base
 from app.database.connection import engine
 from app.api.graph_rag import router as graph_rag
 from app.api.chat import router as chat
+
 
 
 # -----------------------------
@@ -82,6 +84,7 @@ app.include_router(datasource_router)
 app.include_router(knowledge_graph)
 app.include_router(graph_rag)
 app.include_router(chat)
+app.include_router(profiling_router)
 
 # -----------------------------
 # Root Endpoint

@@ -16,31 +16,46 @@ from app.models.db_connection import DatabaseType
 
 class MetadataExtractorFactory:
     """
-    Factory responsible for returning the correct metadata extractor
-    based on datasource type and format.
+    Factory responsible for returning the correct metadata
+    extractor based on datasource type and format.
     """
 
     @staticmethod
     def create(datasource):
         """
-        Parameters
-        ----------
-        datasource : DataSource ORM object
-
-        Returns
-        -------
-        BaseExtractor subclass
+        Create and return the appropriate extractor
+        for the given DataSource.
         """
 
-        # -------------------------------------------------
+        # ==================================================
         # FILE SOURCES
-        # -------------------------------------------------
+        # ==================================================
 
         if datasource.source_type == SourceType.FILE:
 
-            extension = datasource.source_format.lower()
+            if not datasource.source_format:
+                raise ValueError(
+                    "File source format is missing."
+                )
+
+            if not datasource.file_asset:
+                raise ValueError(
+                    "File asset is missing for this datasource."
+                )
+
+            extension = (
+                datasource.source_format
+                .lower()
+                .strip()
+                .lstrip(".")
+            )
 
             file_path = datasource.file_asset.file_path
+
+            if not file_path:
+                raise ValueError(
+                    "File path is missing."
+                )
 
             if extension == "csv":
                 return CSVExtractor(file_path)
@@ -61,11 +76,16 @@ class MetadataExtractorFactory:
                 f"Unsupported file format: {extension}"
             )
 
-        # -------------------------------------------------
+        # ==================================================
         # DATABASE SOURCES
-        # -------------------------------------------------
+        # ==================================================
 
         if datasource.source_type == SourceType.DATABASE:
+
+            if not datasource.db_connection:
+                raise ValueError(
+                    "Database connection is missing."
+                )
 
             db = datasource.db_connection
 
@@ -85,7 +105,14 @@ class MetadataExtractorFactory:
                 return OracleExtractor(db)
 
             raise ValueError(
-                f"Unsupported database: {db.db_type}"
+                f"Unsupported database type: {db.db_type}"
             )
 
-        raise ValueError("Invalid datasource type.")
+        # ==================================================
+        # INVALID SOURCE
+        # ==================================================
+
+        raise ValueError(
+            f"Invalid datasource type: "
+            f"{datasource.source_type}"
+        )
